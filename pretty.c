@@ -1084,6 +1084,7 @@ static size_t format_commit_one(struct strbuf *sb, /* in UTF-8 */
 	struct commit_list *p;
 	const char *arg;
 	int ch;
+	char **slot;
 
 	/* these are independent of the commit */
 	switch (placeholder[0]) {
@@ -1194,6 +1195,17 @@ static size_t format_commit_one(struct strbuf *sb, /* in UTF-8 */
 		load_ref_decorations(NULL, DECORATE_SHORT_REFS);
 		format_decorations_extended(sb, commit, c->auto_color, "", ", ", "");
 		return 1;
+	case 'S':		/* tag/branch like --source */
+		if (c->pretty_ctx->rev->sources == NULL) {
+			return 0;
+		}
+		slot = revision_sources_at(c->pretty_ctx->rev->sources, commit);
+		if (slot && *slot) {
+			strbuf_addstr(sb, *slot);
+			return 1;
+		} else {
+			die(_("failed to get info for %%S"));
+		}
 	case 'g':		/* reflog info */
 		switch(placeholder[1]) {
 		case 'd':	/* reflog selector */
@@ -1497,6 +1509,9 @@ static size_t userformat_want_item(struct strbuf *sb, const char *placeholder,
 	switch (*placeholder) {
 	case 'N':
 		w->notes = 1;
+		break;
+	case 'S':
+		w->source = 1;
 		break;
 	}
 	return 0;
