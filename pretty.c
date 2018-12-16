@@ -1149,6 +1149,18 @@ static size_t format_commit_one(struct strbuf *sb, /* in UTF-8 */
 		parse_object(the_repository, &commit->object.oid);
 
 	switch (placeholder[0]) {
+	case 'S':
+		{
+			/* include information like --source */
+			char **slot = revision_sources_at(c->pretty_ctx->rev->sources, commit);
+			if (slot && *slot) {
+				strbuf_addstr(sb, *slot);
+				return 1;
+			} else {
+				die(_("failed to get info for %%S"));
+				return 0;
+			}
+		}
 	case 'H':		/* commit hash */
 		strbuf_addstr(sb, diff_get_color(c->auto_color, DIFF_COMMIT));
 		strbuf_addstr(sb, oid_to_hex(&commit->object.oid));

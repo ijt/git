@@ -104,6 +104,7 @@ The placeholders are:
 
 - '%H': commit hash
 - '%h': abbreviated commit hash
+- '%S': ref name given on the command line by which the commit was reached (like `git log --source`)
 - '%T': tree hash
 - '%t': abbreviated tree hash
 - '%P': parent hashes
